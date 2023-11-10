@@ -4,7 +4,7 @@ import { log } from "console";
 // const url = process.env.URI!;
 const creds = process.env.CREDS!;
 
-export const client = new MongoClient(creds, {
+export const client: MongoClient = new MongoClient(creds, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -12,17 +12,15 @@ export const client = new MongoClient(creds, {
   },
 });
 
+let conn;
 export async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    conn = await client.connect();
+  } catch (err) {
+    console.log(err);
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 }
+
+export default conn;

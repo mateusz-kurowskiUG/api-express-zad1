@@ -1,4 +1,5 @@
-module.exports = [
+import { ItemInterface } from "../interfaces/Item.model";
+export const data: ItemInterface[] = [
   {
     name: "Telewizor LED 4K 55 cali",
     price: 1399.99,
