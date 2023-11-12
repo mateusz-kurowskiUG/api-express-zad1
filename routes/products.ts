@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import vars from "../server";
 import Item from "../db/classes/Item.class";
 import { ItemInterface } from "../db/interfaces/Item.model";
+import { ObjectId } from "mongodb";
 const userRoute = express.Router();
 
 userRoute
@@ -79,6 +80,55 @@ userRoute
     res
       .status(200)
       .send(`Item: ${JSON.stringify(newItem)} added?:${result.acknowledged}`);
-  });
+  })
+  .put("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const { name, price, description, quantity, measure } = req.body;
+    const propArray = [name, price, description, quantity, measure];
+
+    if (
+      !id ||
+      id.length > 24 ||
+      propArray.filter((e) => e !== undefined).length === 0
+    ) {
+      res.status(500).send("Please enter valid item's id");
+      return;
+    }
+    const propObject = { name, price, description, quantity, measure };
+    const updateFilter = Object.entries(propObject).reduce((acc, currVal) => {
+      const [key, val] = currVal;
+      if (val) acc[key] = val;
+      return acc;
+    }, {});
+
+    const collection = process.env.COLLECTION || "";
+    const dbo = await vars.dbo;
+    if (!dbo) {
+      throw Error("Couldn't connect to db ");
+    }
+
+    await dbo
+      .collection(collection)
+      .updateMany({ _id: new ObjectId(id) }, { $set: updateFilter })
+      .then((x) => {
+        if (x.modifiedCount) {
+          res.status(200).send({
+            success: x.modifiedCount === 1,
+            modified: x.modifiedCount,
+          });
+          return;
+        } else if (x.matchedCount) {
+          res.status(403).send("Przedmiot już ma takie właściwości!");
+          return;
+        } else {
+          res.status(404).send("Nie znaleziono przedmiotu o takim _id");
+          return;
+        }
+      })
+      .catch((e) => {
+        res.status(500).send({ error: e });
+      });
+  })
+  .delete("/", (req: Request, res: Response, next: NextFunction) => {});
 
 export default userRoute;
