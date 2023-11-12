@@ -207,5 +207,5 @@ const exampleData: ItemInterface[] = [
     quantity: 10,
     measure: "sztuki",
   },
-]
+];
 export default exampleData;

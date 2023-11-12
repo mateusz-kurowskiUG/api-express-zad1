@@ -88,7 +88,7 @@ userRoute
 
     if (
       !id ||
-      id.length > 24 ||
+      !ObjectId.isValid(id) ||
       propArray.filter((e) => e !== undefined).length === 0
     ) {
       res.status(500).send("Please enter valid item's id");
@@ -118,10 +118,10 @@ userRoute
           });
           return;
         } else if (x.matchedCount) {
-          res.status(403).send("Przedmiot już ma takie właściwości!");
+          res.status(403).send("This product already has such properties !");
           return;
         } else {
-          res.status(404).send("Nie znaleziono przedmiotu o takim _id");
+          res.status(404).send("Product with that id not found!");
           return;
         }
       })
@@ -129,6 +129,49 @@ userRoute
         res.status(500).send({ error: e });
       });
   })
-  .delete("/", (req: Request, res: Response, next: NextFunction) => {});
+  .delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    if (!id || !ObjectId.isValid(id)) {
+      res.status(404).send("Please enter valid _id");
+      return;
+    }
+    const collection = process.env.COLLECTION || "";
+    const dbo = await vars.dbo;
+    if (!dbo) {
+      res.status(500).send("Couldn't connect to DB");
+      return;
+    }
+    const result = await dbo
+      .collection(collection)
+      .deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount) {
+      res.status(200).send({ deleted: result.deletedCount });
+      return;
+    } else {
+      res.status(404).send({ deleted: result.deletedCount });
+      return;
+    }
+  })
+  .get("/report", async (req: Request, res: Response, next: NextFunction) => {
+    const collection = process.env.COLLECTION || "";
+
+    const dbo = await vars.dbo;
+    if (!dbo) {
+      res.send(400).send("Couldn't connect to DB");
+      return;
+    }
+    try {
+      const report = await dbo
+        .collection(collection)
+        .aggregate([
+          { $group: { _id: "$name", totalQuantity: { $sum: "$quantity" } } },
+        ])
+        .toArray();
+      res.status(200).json(report);
+      return;
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
 
 export default userRoute;

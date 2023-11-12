@@ -21,11 +21,17 @@ opcjonalnie parametry query:
 2. filter=<field>,<wartość>
 
 POST('/products'):
-
-PUT('/products'):
+1. parametry produktu wysyłamy jako JSON w req.body
+2. wymagane są wszystkie parametry klasy Item
+PUT('/products/:id'):
 1. Podajemy _id jako url.params.id
 2. wartości do zmiany wysyłamy jako JSON w body np:
     {
         "name":"T",
         "price":13.99
     }
+
+DELETE('/products/:id')
+1. Podajemy _id jako url.params.id
+
+GET('/products/report)
