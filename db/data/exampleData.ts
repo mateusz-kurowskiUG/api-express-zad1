@@ -1,5 +1,5 @@
 import { ItemInterface } from "../interfaces/Item.model";
-export const data: ItemInterface[] = [
+const exampleData: ItemInterface[] = [
   {
     name: "Telewizor LED 4K 55 cali",
     price: 1399.99,
@@ -172,7 +172,7 @@ export const data: ItemInterface[] = [
     measure: "sztuki",
   },
   {
-    name: "Monitor Acer Predator X27",
+    name: "Monitor Acer Predator X2",
     price: 1999.99,
     description: "Monitor 4K z technologią G-Sync, HDR, 144 Hz",
     quantity: 8,
@@ -208,3 +208,4 @@ export const data: ItemInterface[] = [
     measure: "sztuki",
   },
 ];
+export default exampleData;

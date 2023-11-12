@@ -1,18 +1,27 @@
+require("dotenv").config({ path: "./config.env" });
 import express from "express";
 import cors from "cors";
-import dbo from "mongodb";
-require("dotenv").config({ path: "./config.env" });
-import conn, { run, client } from "./db/scripts/connect";
+import run from "./db/scripts/connect";
+import userRoute from "./routes/products";
+
 const port = process.env.PORT || 5000;
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/products',userRoute);
 
-app.get("/", (req: Request, res: Response): void => {
-  return;
+const dbo = run()
+  .then()
+  .catch((e) => {
+    throw e;
+  });
+const server = app.listen(port, async () => {
+  console.log(port);
+  // const dbo = await run();
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-  run();
-});
+export default {
+  server,
+  app,
+  dbo,
+};

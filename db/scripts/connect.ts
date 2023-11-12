@@ -1,26 +1,44 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
-require("dotenv").config({ path: "./config.env" });
-import { log } from "console";
-// const url = process.env.URI!;
-const creds = process.env.CREDS!;
+import { Db, MongoClient } from "mongodb";
+import prepareCollection from "./create";
+const dbString = process.env.DB || "";
 
-export const client: MongoClient = new MongoClient(creds, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-let conn;
-export async function run() {
+async function connect(client: MongoClient): Promise<MongoClient | void> {
   try {
-    conn = await client.connect();
-  } catch (err) {
-    console.log(err);
-  } finally {
-    await client.close();
+    const conn = await client.connect();
+    console.log("Connected to Atlas!");
+    return conn;
+  } catch (e) {
+    console.error(e);
+    return;
   }
 }
+async function useDb(connection: MongoClient): Promise<Db | void> {
+  if (connection) {
+    const db = await connection.db(dbString);
+    if (db) {
+      console.log("Connected to DB");
 
-export default conn;
+      return db;
+    }
+    return;
+  }
+  return;
+}
+
+async function run(): Promise<Db | void> {
+  const connectionString = process.env.ATLAS_URI || "";
+  const client = await new MongoClient(connectionString);
+
+  const conn = await connect(client);
+  if (!conn) {
+    throw new Error("couln't connect");
+  }
+  const dbo = await useDb(conn);
+  if (!dbo) {
+    throw new Error("couln't connect");
+  }
+
+  await prepareCollection(dbo);
+  return dbo;
+}
+export default run;
