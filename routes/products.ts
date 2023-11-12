@@ -16,18 +16,37 @@ userRoute.get("/", async (req: Request, res: Response, next: NextFunction) => {
     const products = await cursor.find({}).toArray();
     res.status(200).send(products);
     return;
-  }
-  if (sort && filter) {
+  } else if (sort && filter) {
     const [sortBy, sortOrder] = sort.toString().split(",");
-    const [filterBy, filterValue] = filter.toString().split(",");
-    console.log(sortBy, sortOrder);
-    console.log(filterBy, filterValue);
+    let [filterBy, filterValue] = filter.toString().split(",");
+    let filterVal;
+    if (filterBy === "quantity" || filterBy === "price") {
+      filterVal = +filterValue;
+    } else {
+      filterVal = filterValue;
+    }
     const products = await cursor
-      .find({ [filterBy]: +filterValue })
+      .find({ [filterBy]: filterVal })
       .sort({ [sortBy]: +sortOrder })
       .toArray();
-    console.log();
+    res.status(200).send(products);
+  } else if (sort && !filter) {
+    const [sortBy, sortOrder] = sort.toString().split(",");
+    const products = await cursor
+      .find({})
+      .sort({ [sortBy]: +sortOrder })
+      .toArray();
+    res.status(200).send(products);
+  } else {
+    const [filterBy, filterValue] = filter.toString().split(",");
+    let filterVal;
+    if (filterBy === "quantity" || filterBy === "price") {
+      filterVal = +filterValue;
+    } else {
+      filterVal = filterValue;
+    }
 
+    const products = await cursor.find({ [filterBy]: filterVal }).toArray();
     res.status(200).send(products);
   }
 });
