@@ -52,7 +52,8 @@ https://api-express-zad1-a82d8b2c2903.herokuapp.com/products/6551dde2fbc99dd8aef
   {
     "name": "Telew",
     "price": 0
-  }
+}
+
 DELETE('/products/:id')
 1. Podajemy _id jako url.params.id
 https://api-express-zad1-a82d8b2c2903.herokuapp.com/products/6551dde2fbc99dd8aef79f26
