@@ -34,6 +34,7 @@ userRoute
         .sort({ [sortBy]: +sortOrder })
         .toArray();
       res.status(200).send(products);
+      return;
     } else if (sort && !filter) {
       const [sortBy, sortOrder] = sort.toString().split(",");
       const products = await cursor
@@ -41,6 +42,7 @@ userRoute
         .sort({ [sortBy]: +sortOrder })
         .toArray();
       res.status(200).send(products);
+      return;
     } else {
       const [filterBy, filterValue] = filter.toString().split(",");
       let filterVal;
@@ -52,6 +54,7 @@ userRoute
 
       const products = await cursor.find({ [filterBy]: filterVal }).toArray();
       res.status(200).send(products);
+      return;
     }
   })
   .post("/", async (req: Request, res: Response, next: NextFunction) => {
@@ -80,6 +83,7 @@ userRoute
     res
       .status(200)
       .send(`Item: ${JSON.stringify(newItem)} added?:${result.acknowledged}`);
+    return;
   })
   .put("/:id", async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -171,6 +175,7 @@ userRoute
       return;
     } catch (error) {
       res.status(500).send(error);
+      return;
     }
   });
 
