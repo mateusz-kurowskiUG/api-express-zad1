@@ -169,6 +169,7 @@ userRoute
         .collection(collection)
         .aggregate([
           { $group: { _id: "$name", totalQuantity: { $sum: "$quantity" } } },
+          { $sort: { totalQuantity: 1 } },
         ])
         .toArray();
       res.status(200).json(report);
