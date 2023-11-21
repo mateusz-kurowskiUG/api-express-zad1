@@ -178,7 +178,7 @@ userRoute
             $project: {
               _id: 1,
               totalQuantity: 1,
-              totalPrice: { $multiply: ["$price", "$quantity"] },
+              totalPrice: { $multiply: ["$price", "$totalQuantity"] },
             },
           },
           { $sort: { totalQuantity: 1 } },
