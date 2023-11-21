@@ -168,7 +168,13 @@ userRoute
       const report = await dbo
         .collection(collection)
         .aggregate([
-          { $group: { _id: "$name", totalQuantity: { $sum: "$quantity" } } },
+          {
+            $group: {
+              _id: "$name",
+              totalQuantity: { $sum: "$quantity" },
+              totalPrice: { $sum: "$price" },
+            },
+          },
           { $sort: { totalQuantity: 1 } },
         ])
         .toArray();
