@@ -172,7 +172,13 @@ userRoute
             $group: {
               _id: "$name",
               totalQuantity: { $sum: "$quantity" },
-              totalPrice: { $sum: "$price" },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              totalQuantity: 1,
+              totalPrice: { $multiply: ["$price", "$quantity"] },
             },
           },
           { $sort: { totalQuantity: 1 } },
