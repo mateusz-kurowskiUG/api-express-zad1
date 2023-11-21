@@ -172,6 +172,7 @@ userRoute
             $group: {
               _id: "$name",
               totalQuantity: { $sum: "$quantity" },
+              price: { $sum: "$price" },
             },
           },
           {
@@ -179,6 +180,13 @@ userRoute
               _id: 1,
               totalQuantity: 1,
               totalPrice: { $multiply: ["$price", "$totalQuantity"] },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              totalQuantity: 1,
+              totalPrice: { $round: ["$totalPrice", 2] },
             },
           },
           { $sort: { totalQuantity: 1 } },
